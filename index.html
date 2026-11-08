@@ -51,18 +51,27 @@
   if(i%4===0){note(bass[Math.floor(i/4)],t,.9,.055,'triangle');note(bass[Math.floor(i/4)]*1.5,t,.75,.025,'sine')}
   step++;
  }
+ async function startMusic(){
+  if(playing)return;
+  const AC=window.AudioContext||window.webkitAudioContext;
+  if(!AC)return;
+  if(!context){context=new AC();master=context.createGain();master.gain.value=.65;master.connect(context.destination)}
+  try{await context.resume()}catch(e){return}
+  if(context.state!=='running')return;
+  playing=true;tick();interval=setInterval(tick,430);
+  button.textContent='♫ Pausar música';button.setAttribute('aria-pressed','true');button.title='Pausar música natalina';
+ }
  button.addEventListener('click',async()=>{
   if(!playing){
-   const AC=window.AudioContext||window.webkitAudioContext;
-   if(!AC){button.textContent='Áudio indisponível';return}
-   if(!context){context=new AC();master=context.createGain();master.gain.value=.65;master.connect(context.destination)}
-   try{await context.resume()}catch(e){button.textContent='Áudio indisponível';return}
-   playing=true;tick();interval=setInterval(tick,430);
-   button.textContent='♫ Pausar música';button.setAttribute('aria-pressed','true');button.title='Pausar música natalina';
+   await startMusic();
   }else{
    playing=false;clearInterval(interval);button.textContent='♫ Ativar música';button.setAttribute('aria-pressed','false');button.title='Ativar música natalina instrumental';
   }
  });
+ // Tenta iniciar imediatamente; se bloqueado, inicia na primeira interação permitida.
+ startMusic();
+ const onFirstInteraction=()=>{if(!playing)startMusic()};
+ ['pointerdown','keydown','touchstart'].forEach(type=>document.addEventListener(type,onFirstInteraction,{passive:true}));
  document.addEventListener('visibilitychange',()=>{if(document.hidden&&playing){playing=false;clearInterval(interval);button.textContent='♫ Ativar música';button.setAttribute('aria-pressed','false')}});
 })();
 // Para ativar o botão de compra, cole a URL completa e oficial do checkout abaixo.
