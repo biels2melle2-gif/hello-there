@@ -69,7 +69,7 @@
  document.addEventListener('visibilitychange',()=>{if(document.hidden&&playing){playing=false;clearInterval(interval);}});
 })();
 // Para ativar o botão de compra, cole a URL completa e oficial do checkout abaixo.
-const CHECKOUT_URL = "";
+const CHECKOUT_URL = "https://pay.kiwify.com.br/IXL4ptZ";
 document.getElementById("year").textContent = new Date().getFullYear();
 if (CHECKOUT_URL && /^https:\/\//i.test(CHECKOUT_URL)) {
  const btn=document.getElementById("checkout");
